@@ -1,8 +1,92 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.geniusgithub.musicbox.MainActivity"
-    tools:ignore="MergeRootFrame" />
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/mainLayout"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@drawable/background">
+
+	<RelativeLayout 
+	android:id="@+id/rl_background"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_marginTop="4dp" 
+	android:layout_marginBottom="42dp"
+	android:paddingLeft="6dp"
+	android:paddingRight="6dp"
+	android:background="@drawable/listlayout_bg">
+		
+    
+		<ListView 
+	    android:id="@+id/lv_listview" 
+	    android:layout_height="fill_parent" 
+	    android:layout_width="fill_parent"
+	    android:layout_marginTop="60dp"
+	 	android:cacheColorHint="#00000000"    
+		android:divider="@color/divider_color"
+	    android:dividerHeight="1dp"
+	    android:scrollbars="none"
+	    android:listSelector="@drawable/selector_list_item">
+	    </ListView>
+
+		<View 
+	    android:background="@drawable/shape_line" 
+	   	android:layout_marginTop="60dp"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="1dp" />
+	    
+	    <RelativeLayout
+	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:minHeight="60dp"
+		android:layout_alignParentTop="true">
+	
+			<Button 
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	 		android:layout_centerInParent="true"
+	 		android:text="@string/main_title"
+	 		android:textColor="#666666"
+	 		android:textSize="20dp"
+	        android:background="@drawable/prompt">
+	        </Button>	
+	    
+		</RelativeLayout>
+	    
+	</RelativeLayout>
+	
+	<SlidingDrawer  
+	android:id="@+id/slidingDrawer"
+	android:layout_width="fill_parent"  
+	android:layout_height="fill_parent"  
+    android:handle="@+id/handle"  
+	android:content="@+id/content"
+	android:topOffset="10dp">  	  
+			<include layout="@layout/sliderdrawer_handle_layout"></include>		
+		   	<include layout="@layout/sliderdrawer_content_layout"></include>	
+     </SlidingDrawer >
+    
+
+<!-- 	<com.genius.widget.MySlidingDrawer   -->
+<!-- 	android:id="@+id/slidingDrawer" -->
+<!-- 	android:layout_width="fill_parent"   -->
+<!-- 	android:layout_height="fill_parent"   -->
+<!--     android:handle="@+id/handle"   -->
+<!-- 	android:content="@+id/content" -->
+<!-- 	android:topOffset="10dp">  	   -->
+<!-- 			<include layout="@layout/sliderdrawer_handle_layout"></include>		 -->
+<!-- 		   	<include layout="@layout/sliderdrawer_content_layout"></include>	 -->
+<!--      </com.genius.widget.MySlidingDrawer > -->
+     
+     
+     
+<!-- 	<RelativeLayout  -->
+<!-- 	android:id="@+id/VirtualLayout" -->
+<!-- 	android:layout_width="fill_parent" -->
+<!-- 	android:layout_height="fill_parent" -->
+<!-- 	android:background="#60000000" -->
+<!-- 	android:visibility="invisible"> -->
+<!-- 	</RelativeLayout> -->
+	  	
+</RelativeLayout>
 
