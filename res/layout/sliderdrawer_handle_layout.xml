@@ -87,7 +87,7 @@
 		        
 		        
 	   			<TextView 
-	   			android:id="@+id/textPlaySong"   
+	   			android:id="@+id/tv_PlaySong"   
 				android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"	
 			    android:text="@string/default_title_name"		 

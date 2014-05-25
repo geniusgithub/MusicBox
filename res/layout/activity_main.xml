@@ -54,8 +54,8 @@
 		</RelativeLayout>
 	    
 	</RelativeLayout>
-	
-	<SlidingDrawer  
+    
+	<com.geniusgithub.musicbox.widget.SlidingDrawerEx  
 	android:id="@+id/slidingDrawer"
 	android:layout_width="fill_parent"  
 	android:layout_height="fill_parent"  
@@ -64,19 +64,7 @@
 	android:topOffset="10dp">  	  
 			<include layout="@layout/sliderdrawer_handle_layout"></include>		
 		   	<include layout="@layout/sliderdrawer_content_layout"></include>	
-     </SlidingDrawer >
-    
-
-<!-- 	<com.genius.widget.MySlidingDrawer   -->
-<!-- 	android:id="@+id/slidingDrawer" -->
-<!-- 	android:layout_width="fill_parent"   -->
-<!-- 	android:layout_height="fill_parent"   -->
-<!--     android:handle="@+id/handle"   -->
-<!-- 	android:content="@+id/content" -->
-<!-- 	android:topOffset="10dp">  	   -->
-<!-- 			<include layout="@layout/sliderdrawer_handle_layout"></include>		 -->
-<!-- 		   	<include layout="@layout/sliderdrawer_content_layout"></include>	 -->
-<!--      </com.genius.widget.MySlidingDrawer > -->
+     </com.geniusgithub.musicbox.widget.SlidingDrawerEx>
      
      
      

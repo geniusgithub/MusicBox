@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SlidingDrawer;
 
-public class MySlidingDrawer extends SlidingDrawer{
+public class SlidingDrawerEx extends SlidingDrawer{
 	
 	public interface IOnSliderHandleViewClickListener {
 		void onViewClick(View view) ;
@@ -43,11 +43,11 @@ public class MySlidingDrawer extends SlidingDrawer{
     	mTouchViewClickListener = listener;
     }
 
-    public MySlidingDrawer(Context context, AttributeSet attrs) {
+    public SlidingDrawerEx(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
     
-    public MySlidingDrawer(Context context, AttributeSet attrs, int defStyle){
+    public SlidingDrawerEx(Context context, AttributeSet attrs, int defStyle){
         super(context, attrs, defStyle);
     }
     
