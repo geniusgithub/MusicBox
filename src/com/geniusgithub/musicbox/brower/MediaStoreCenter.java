@@ -11,6 +11,11 @@ import com.geniusgithub.musicbox.util.LogFactory;
 
 
 public class MediaStoreCenter implements IMediaScanListener{
+	
+	public static interface IScanObser{
+		public void scanComplete();
+		public void scanCancel();
+	}
 
 
 	private static final CommonLog log = LogFactory.createLog();
@@ -21,6 +26,7 @@ public class MediaStoreCenter implements IMediaScanListener{
 	private MediaScannerCenter mMediaScannerCenter;
 	private List<MediaItem> mMusicList = new ArrayList<MediaItem>();
 	
+	private List<IScanObser> mObsers = new ArrayList<MediaStoreCenter.IScanObser>();
 	
 	private MediaStoreCenter(Context context) {
 		mContext = context;
@@ -54,6 +60,34 @@ public class MediaStoreCenter implements IMediaScanListener{
 		return mMusicList;
 	}
 	
+	public boolean isMusicEmpty(){
+		if (mMusicList != null && mMusicList.size() > 0){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public void registerScanObser(IScanObser object){
+		synchronized(mObsers){
+			mObsers.add(object);
+		}
+	}
+	
+	public void unRegisterScanObser(IScanObser object){
+		synchronized(mObsers){
+			mObsers.remove(object);
+		}
+	}
+	
+	public void clearScanObser(){
+		synchronized(mObsers){
+			mObsers.clear();
+		}
+	}
+	
+
+	
 	public void doScanMedia(){
 		mMediaScannerCenter.startScanThread(this);
 	}
@@ -73,16 +107,32 @@ public class MediaStoreCenter implements IMediaScanListener{
 
 	@Override
 	public void scanComplete() {
-		// TODO Auto-generated method stub
-		
+		performScanComplete();
 	}
 
 	@Override
 	public void scanCancel() {
-		// TODO Auto-generated method stub
-		
+		performScanCancel();
+	}
+	
+	private void performScanComplete(){
+		synchronized(mObsers){
+			int size = mObsers.size();
+			for(int i = 0; i < size; i++){
+				mObsers.get(i).scanComplete();
+			}
+		}
 	}
 
+	private void performScanCancel(){
+		synchronized(mObsers){
+			int size = mObsers.size();
+			for(int i = 0; i < size; i++){
+				mObsers.get(i).scanCancel();
+			}
+		}
+	}
+	
 	@Override
 	public void mediaScan(MediaItem item) {
 		// TODO Auto-generated method stub

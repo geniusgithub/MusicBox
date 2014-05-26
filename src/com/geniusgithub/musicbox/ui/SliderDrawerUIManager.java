@@ -16,11 +16,16 @@ import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
 
-public class SliderDrawerUIManager implements OnClickListener, OnSeekBarChangeListener, 
+public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, OnSeekBarChangeListener, 
 						OnDrawerOpenListener, OnDrawerCloseListener, IOnSliderHandleViewClickListener{
 
-	public SlidingDrawerEx mSlidingDrawer;
+	public static interface ISliderStatuListener{
+		public void onStatus(boolean isOpen);
+	}
 	
+	public SlidingDrawerEx mSlidingDrawer;
+	public ISliderStatuListener mChangeListener;
+
 	public View mRootView;
 
 	public ImageButton   mBtnHandle;
@@ -52,8 +57,8 @@ public class SliderDrawerUIManager implements OnClickListener, OnSeekBarChangeLi
 	
 	}
 	
-	private void setupViews(View sliderView)
-	{
+	@Override
+	public void setupViews(View sliderView) {
 		mRootView = sliderView;
 		
 		mBtnPlay = (ImageButton) sliderView.findViewById(R.id.btn_Play);
@@ -82,8 +87,7 @@ public class SliderDrawerUIManager implements OnClickListener, OnSeekBarChangeLi
     	mcurtimeTextView = (TextView)  sliderView.findViewById(R.id.tv_CurTime);
     	mtotaltimeTextView = (TextView)  sliderView.findViewById(R.id.tv_TotalTime);
     	mSongNumTextView = (TextView)  sliderView.findViewById(R.id.tv_SongNum);
-    	
-    		    
+    
     	
     	mPlayProgress = (SeekBar) sliderView.findViewById(R.id.seekBar);
     	mPlayProgress.setOnSeekBarChangeListener(this);
@@ -99,6 +103,14 @@ public class SliderDrawerUIManager implements OnClickListener, OnSeekBarChangeLi
     	mHandlePane = sliderView.findViewById(R.id.handle_panel);
 	}
 
+	public void addSliderStatusListener(ISliderStatuListener listener){
+		mChangeListener = listener;
+	}
+	
+	public void removeSliderStatusListener(){
+		mChangeListener = null;
+	}
+	
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -157,6 +169,10 @@ public class SliderDrawerUIManager implements OnClickListener, OnSeekBarChangeLi
 	public void onDrawerOpened() {
 
 		mBtnHandle.setImageResource(R.drawable.handle_down);
+		
+		if (mChangeListener != null){
+			mChangeListener.onStatus(true);
+		}
 
 	}
 
@@ -165,6 +181,9 @@ public class SliderDrawerUIManager implements OnClickListener, OnSeekBarChangeLi
 
 		mBtnHandle.setImageResource(R.drawable.handle_up);
 
+		if (mChangeListener != null){
+			mChangeListener.onStatus(false);
+		}
 	}
 
 	@Override
@@ -179,5 +198,7 @@ public class SliderDrawerUIManager implements OnClickListener, OnSeekBarChangeLi
 			break;
 		}
 	}
+
+
 
 }
