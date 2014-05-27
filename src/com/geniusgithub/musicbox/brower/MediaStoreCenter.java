@@ -12,13 +12,13 @@ import com.geniusgithub.musicbox.util.LogFactory;
 
 public class MediaStoreCenter implements IMediaScanListener{
 	
+	private final static CommonLog log = LogFactory.createLog();
+	
 	public static interface IScanObser{
 		public void scanComplete();
 		public void scanCancel();
 	}
 
-
-	private static final CommonLog log = LogFactory.createLog();
 	
 	private static  MediaStoreCenter mInstance;
 	private Context mContext;
@@ -89,10 +89,12 @@ public class MediaStoreCenter implements IMediaScanListener{
 
 	
 	public void doScanMedia(){
+		log.e("doScanMedia...");
 		mMediaScannerCenter.startScanThread(this);
 	}
 	
 	public void stopScanMedia(){
+		log.e("stopScanMedia...");
 		mMediaScannerCenter.stopScanThread();
 		while(!mMediaScannerCenter.isThreadOver()){
 			try {
@@ -107,11 +109,13 @@ public class MediaStoreCenter implements IMediaScanListener{
 
 	@Override
 	public void scanComplete() {
+		log.e("scanComplete...");
 		performScanComplete();
 	}
 
 	@Override
 	public void scanCancel() {
+		log.e("scanCancel...");
 		performScanCancel();
 	}
 	

@@ -7,6 +7,7 @@ public class MediaItem {
 	private String artist = "";
 	private String album = "";
 	private String albumiconuri = "";
+	private int    totalTime = 0;
 	
 
 	public String getTitle() {
@@ -44,4 +45,10 @@ public class MediaItem {
 		this.albumiconuri = (albumiconuri != null ? albumiconuri : "");
 	}
 	
+	public int getDuration(){
+		return totalTime;
+	}
+	public void setDuration(int duration){
+		totalTime = duration;
+	}
 }

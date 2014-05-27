@@ -3,6 +3,8 @@ package com.geniusgithub.musicbox;
 import com.geniusgithub.musicbox.brower.MediaStoreCenter;
 import com.geniusgithub.musicbox.ui.SliderDrawerUIManager;
 import com.geniusgithub.musicbox.ui.SongListUIManager;
+import com.geniusgithub.musicbox.util.CommonLog;
+import com.geniusgithub.musicbox.util.LogFactory;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -17,6 +19,7 @@ import android.os.Build;
 
 public class MainActivity extends Activity{
 
+	private final static CommonLog log = LogFactory.createLog();
 	
 	private MediaStoreCenter mMediaStoreCenter;
 	
@@ -67,27 +70,29 @@ public class MainActivity extends Activity{
 		View slView = findViewById(R.id.slidingDrawer);
 		mSliderDrawerUIManager.setupViews(slView);
 		
-		mSongListUIManager = new SongListUIManager();
+		mSongListUIManager = new SongListUIManager(MBApplication.getInstance());
 		View songView = findViewById(R.id.rl_background);
 		mSongListUIManager.setupViews(songView);
 		
 		mSliderDrawerUIManager.addSliderStatusListener(mSongListUIManager);
+	
 	}
 	
 	
 	
 	private void initData(){
 		mMediaStoreCenter = MediaStoreCenter.getInstance();
-	
+		mMediaStoreCenter.registerScanObser(mSongListUIManager);
+		
 		if (mMediaStoreCenter.isMusicEmpty()){
-		//	mMediaStoreCenter.doScanMedia();
+			mMediaStoreCenter.doScanMedia();
 		}else{
-			
+			mSongListUIManager.refreshList(mMediaStoreCenter.getMusicMedia());
 		}
 	}
 	
 	private void unInitData(){
-		
+		mMediaStoreCenter.unRegisterScanObser(mSongListUIManager);
 	}
 
 }
