@@ -7,6 +7,8 @@ import com.geniusgithub.musicbox.R;
 import com.geniusgithub.musicbox.adapter.ListViewAdapter;
 import com.geniusgithub.musicbox.brower.MediaItem;
 import com.geniusgithub.musicbox.brower.MediaStoreCenter;
+import com.geniusgithub.musicbox.control.MusicControlCenter;
+import com.geniusgithub.musicbox.player.PlayState;
 import com.geniusgithub.musicbox.util.CommonLog;
 import com.geniusgithub.musicbox.util.LogFactory;
 
@@ -19,8 +21,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class SongListUIManager implements IBaseUIManager, SliderDrawerUIManager.ISliderStatuListener, OnItemClickListener,
-												MediaStoreCenter.IScanObser{
+public class SongListUIManager implements IBaseUIManager, SliderDrawerUIManager.ISliderStatuListener,
+															OnItemClickListener{
 	
 	private final static CommonLog log = LogFactory.createLog();
 	
@@ -34,9 +36,14 @@ public class SongListUIManager implements IBaseUIManager, SliderDrawerUIManager.
 	public ListView				mListView;
 	public ListViewAdapter 		mAdapter;
 	public List<MediaItem>		mMediaItems = new ArrayList<MediaItem>();
+	
+	private MusicControlCenter mMusicControlCenter;
+	private int curPos = 0;
 
 	public SongListUIManager(Context context){
 		mContext = context;
+		
+		mMusicControlCenter = MusicControlCenter.getInstance();
 	}
 
 	@Override
@@ -46,6 +53,7 @@ public class SongListUIManager implements IBaseUIManager, SliderDrawerUIManager.
 		mListView = (ListView) rootViews.findViewById(R.id.lv_listview);	
 		mAdapter = new ListViewAdapter(mContext, mMediaItems);
 		mListView.setAdapter(mAdapter);
+		mListView.setOnItemClickListener(this);
 		
 		mHandler = new Handler(){
 
@@ -60,10 +68,17 @@ public class SongListUIManager implements IBaseUIManager, SliderDrawerUIManager.
 		};
 	}
 
+	public void setPlayState(int playIndex, int playState)
+	{
+		mAdapter.setPlayState(playIndex, playState);
+	}
+	
+	
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		// TODO Auto-generated method stub
+	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 		
+		mMusicControlCenter.playIndex(pos);
+		mAdapter.setPlayState(pos, PlayState.MPS_PLAYING);
 	}
 	
 	public void refreshList(List<MediaItem> items){
@@ -84,18 +99,6 @@ public class SongListUIManager implements IBaseUIManager, SliderDrawerUIManager.
 		showUI(!isOpen);
 	}
 
-	@Override
-	public void scanComplete() {
-		
-		mMediaItems = MediaStoreCenter.getInstance().getMusicMedia();
-		
-		notifyRefreshHandler();
-	}
-
-	@Override
-	public void scanCancel() {
-		
-	}
 	
 	private void notifyRefreshHandler(){
 		mHandler.removeMessages(REFRESH_SONGLIST);

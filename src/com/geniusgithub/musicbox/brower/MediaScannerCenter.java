@@ -14,8 +14,6 @@ public class MediaScannerCenter {
 
 	private static final CommonLog log = LogFactory.createLog();
 
-
-
 	
 	private static  MediaScannerCenter mInstance;
 	private Context mContext;

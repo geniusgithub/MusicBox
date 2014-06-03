@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
+import com.geniusgithub.musicbox.MBApplication;
 import com.geniusgithub.musicbox.brower.MediaItem;
+import com.geniusgithub.musicbox.brower.MediaScannerCenter;
 import com.geniusgithub.musicbox.player.IMediaOperator;
 import com.geniusgithub.musicbox.player.MusicPlayEngineImpl;
 
@@ -19,9 +22,22 @@ public class MusicControlCenter implements IMediaOperator{
 	private MusicPlayEngineImpl mPlayerEngineImpl;
 	private long playNextTimeMill = 0;
 	
-	public MusicControlCenter(Context context){
+	private static  MusicControlCenter mInstance;
+	
+	
+	private MusicControlCenter(Context context){
 		mContext = context;
 	}
+	
+
+	public static synchronized MusicControlCenter getInstance() {
+		if (mInstance == null){
+			mInstance  = new MusicControlCenter(MBApplication.getInstance());
+		}
+		return mInstance;
+	}
+
+	
 	
 	public void updateMediaInfo(int index, List<MediaItem> list){
 		mCurPlayIndex = index;
@@ -30,6 +46,33 @@ public class MusicControlCenter implements IMediaOperator{
 	
 	public void bindMusicPlayEngine(MusicPlayEngineImpl object){
 		mPlayerEngineImpl = object;
+	}
+	
+	public int getCurPlayIndex(){
+		return mCurPlayIndex;
+	}
+	
+	public int getCurPlayState(){
+		return mPlayerEngineImpl.getPlayState();
+	}
+	
+	public boolean playIndex(int index){
+		if (!isHaveFile())
+		{
+			return false;
+		}
+		mCurPlayIndex = index;
+	
+		long curTimeMill =  System.currentTimeMillis();
+		long timeInterfal = Math.abs(curTimeMill - playNextTimeMill);
+		if (timeInterfal < 1000){
+			return false;
+		}
+		
+		playNextTimeMill = curTimeMill;	
+		mCurPlayIndex = reviceIndex(mCurPlayIndex);
+		mPlayerEngineImpl.playMedia(mMusicList.get(mCurPlayIndex));
+		return true;
 	}
 
 	
