@@ -5,7 +5,7 @@
     <string name="main_title">SNAK音乐盒</string>
     <string name="default_title_name">欢迎加入SNAK音乐</string>
  	<string name="about_title_name">关于SNAK音乐</string>
- 	
+    <string name="toast_musicplay_fail">music play error</string>
  	<string name="about_content">
 	SNAK音乐for Android\n
 	版本号:SNAK1.1.1\n\n

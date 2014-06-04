@@ -51,6 +51,14 @@ public abstract class AbstractMediaPlayEngine implements IBasePlayEngine, OnComp
 	public void setPlayerListener(PlayerEngineListener listener){
 		mPlayerEngineListener = listener;
 	}
+	
+	public String getPlaySong(){
+		if (mMediaInfo != null){
+			return mMediaInfo.getTitle();
+		}
+		
+		return "";
+	}
 		
 	@Override
 	public void play() {

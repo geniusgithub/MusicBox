@@ -1,26 +1,35 @@
 package com.geniusgithub.musicbox;
 
+
 import com.geniusgithub.musicbox.brower.MediaItem;
 import com.geniusgithub.musicbox.brower.MediaStoreCenter;
 import com.geniusgithub.musicbox.control.MusicControlCenter;
+import com.geniusgithub.musicbox.player.AbstractTimer;
 import com.geniusgithub.musicbox.player.MusicPlayEngineImpl;
+import com.geniusgithub.musicbox.player.PlayState;
 import com.geniusgithub.musicbox.player.PlayerEngineListener;
+import com.geniusgithub.musicbox.player.SingleSecondTimer;
 import com.geniusgithub.musicbox.ui.SliderDrawerUIManager;
 import com.geniusgithub.musicbox.ui.SongListUIManager;
 import com.geniusgithub.musicbox.util.CommonLog;
 import com.geniusgithub.musicbox.util.LogFactory;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 
 public class MainActivity extends Activity implements MediaStoreCenter.IScanObser,
 														OnBufferingUpdateListener, OnErrorListener{
 
 	private final static CommonLog log = LogFactory.createLog();
+	
+	private final static int REFRESH_CURPOS = 0x0001;
 	
 	private MediaStoreCenter mMediaStoreCenter;
 	
@@ -30,6 +39,9 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 	private MusicControlCenter mMusicControlCenter;
 	private MusicPlayEngineListener mMusicPlayEngineListener;
 	
+	private AbstractTimer mPlayPosTimer;
+	
+	private Handler mHandler;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -94,11 +106,31 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 		if (mMediaStoreCenter.isMusicEmpty()){
 			mMediaStoreCenter.doScanMedia();
 		}else{
+			int curPlayIndex = mMusicControlCenter.getCurPlayIndex();
+			int playstate = mMusicControlCenter.getCurPlayState();
 			mSongListUIManager.refreshList(mMediaStoreCenter.getMusicMedia());
-			mSongListUIManager.setPlayState( mMusicControlCenter.getCurPlayIndex(), mMusicControlCenter.getCurPlayState());
+			mSongListUIManager.setPlayState( curPlayIndex, playstate);
+			mSliderDrawerUIManager.showPlay(playstate != PlayState.MPS_PAUSE);		
+			mSliderDrawerUIManager.setSongNumInfo(curPlayIndex, mMediaStoreCenter.getMusicMedia().size());
+			mSliderDrawerUIManager.setSongName(mMusicControlCenter.getPlaySong());
 		}
 		
-	
+		mHandler = new Handler()
+		{
+			@Override
+			public void handleMessage(Message msg) {
+				switch(msg.what)
+				{
+					case REFRESH_CURPOS:					
+						refreshCurPos();
+						break;
+				}
+			}
+			
+		};
+		
+		mPlayPosTimer = new SingleSecondTimer(this);
+		mPlayPosTimer.setHandler(mHandler, REFRESH_CURPOS);
 	}
 	
 	private void unInitData(){
@@ -109,6 +141,7 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 	@Override
 	public void scanComplete() {
 		mSongListUIManager.refreshList(mMediaStoreCenter.getMusicMedia());
+		mSliderDrawerUIManager.setSongNumInfo(mMusicControlCenter.getCurPlayIndex(), mMediaStoreCenter.getMusicMedia().size());
 		mMusicControlCenter.updateMediaInfo(0, mMediaStoreCenter.getMusicMedia());
 	}
 
@@ -131,7 +164,12 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 		
 	}
 	
+	public void refreshCurPos(){
+		int pos = mMusicControlCenter.getCurPosition();
 	
+		mSliderDrawerUIManager.setSeekbarProgress(pos);
+	
+	}
 	
 	private class MusicPlayEngineListener implements PlayerEngineListener
 	{
@@ -139,38 +177,42 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 		@Override
 		public void onTrackPlay(MediaItem itemInfo) {
 		
-//			mPlayPosTimer.startTimer();
 //			LoaderHelper.syncDownLoadDrawable(mMediaInfo.getAlbumUri(), mHandler, LOAD_DRAWABLE_COMPLETE);
-//			mUIManager.showPlay(false);
-//			mUIManager.showPrepareLoadView(false);
-//			mUIManager.showControlView(true);
+			
+			mPlayPosTimer.startTimer();
+			mSliderDrawerUIManager.showPlay(false);
+			int playIndex = mMusicControlCenter.getCurPlayIndex();
+			int playState = mMusicControlCenter.getCurPlayState();
+			mSliderDrawerUIManager.setSongNumInfo(playIndex, mMediaStoreCenter.getMusicMedia().size());
+			mSongListUIManager.setPlayState(playIndex, playState);
+			
 		}
 
 		@Override
 		public void onTrackStop(MediaItem itemInfo) {
 
-//			mPlayPosTimer.stopTimer();
-//			mUIManager.showPlay(true);
 //			mUIManager.updateMediaInfoView(mMediaInfo);
 //			mUIManager.showLoadView(false);
+			
+			mPlayPosTimer.stopTimer();
+			mSliderDrawerUIManager.showPlay(true);
+			mSliderDrawerUIManager.updateMediaInfo(itemInfo);
+			
+
 		}
 
 		@Override
 		public void onTrackPause(MediaItem itemInfo) {
-	
-//			mPlayPosTimer.stopTimer();
-//			mUIManager.showPlay(true);
+			
+			mPlayPosTimer.stopTimer();
+			mSliderDrawerUIManager.showPlay(true);
+			
+			mSongListUIManager.setPlayState(mMusicControlCenter.getCurPlayIndex(), mMusicControlCenter.getCurPlayState());
 		}
 
 		@Override
 		public void onTrackPrepareSync(MediaItem itemInfo) {
 
-//			mPlayPosTimer.stopTimer();
-//			mUIManager.updateMediaInfoView(itemInfo);
-//			mUIManager.showPlay(false);
-//			mUIManager.showPrepareLoadView(true);
-//			mUIManager.showControlView(false);
-//			
 //			mMediaInfo = itemInfo;
 //			boolean need = checkNeedDownLyric(itemInfo);
 //			log.e("checkNeedDownLyric need = " + need);
@@ -178,26 +220,32 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 //				mLrcDownLoadHelper.syncDownLoadLRC(itemInfo.title, itemInfo.artist, MusicPlayerActivity.this);
 //			}			
 //			mUIManager.updateLyricView(itemInfo);	
+			
+			mPlayPosTimer.stopTimer();
+			
+			
+			mSliderDrawerUIManager.showPlay(false);
+			mSliderDrawerUIManager.updateMediaInfo(itemInfo);
 		}
 
 		@Override
 		public void onTrackPrepareComplete(MediaItem itemInfo) {
 
-//			mPlayPosTimer.stopTimer();
+
 //			int duration = mPlayerEngineImpl.getDuration();
 //			mUIManager.setSeekbarMax(duration);
 //			mUIManager.setTotalTime(duration);
-			
-		
 
+			mPlayPosTimer.stopTimer();
 		}
 		
 		@Override
 		public void onTrackStreamError(MediaItem itemInfo) {
 			log.e("onTrackStreamError");
-//			mPlayPosTimer.stopTimer();		
-//			mMusicControlCenter.stop();	
-//			mUIManager.showPlayErrorTip();
+			
+			mPlayPosTimer.stopTimer();
+			mMusicControlCenter.stop();
+			mSliderDrawerUIManager.showPlayErrorTip();
 		}
 
 		@Override

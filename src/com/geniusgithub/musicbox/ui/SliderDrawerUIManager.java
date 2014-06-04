@@ -1,7 +1,10 @@
 package com.geniusgithub.musicbox.ui;
 
-
+import com.geniusgithub.musicbox.MBApplication;
 import com.geniusgithub.musicbox.R;
+import com.geniusgithub.musicbox.brower.MediaItem;
+import com.geniusgithub.musicbox.control.MusicControlCenter;
+import com.geniusgithub.musicbox.util.TimeExUtils;
 import com.geniusgithub.musicbox.widget.SlidingDrawerEx;
 import com.geniusgithub.musicbox.widget.SlidingDrawerEx.IOnSliderHandleViewClickListener;
 
@@ -49,12 +52,13 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 	public ImageButton mBtnPlayPre;
 	public ImageButton mBtnMenu;    	  
 	
-	private boolean mPlayAuto = true;
+	private boolean isSeekbarTouch = false;	
 	
+	private MusicControlCenter mMusicControlCenter;
 	
 	public SliderDrawerUIManager()
 	{
-	
+		mMusicControlCenter = MusicControlCenter.getInstance();
 	}
 	
 	@Override
@@ -117,19 +121,19 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 		switch(v.getId())
 		{
 		case R.id.btn_Play:
-
+			mMusicControlCenter.replay();
 			break;
 		case R.id.btn_Pause:
-
+			mMusicControlCenter.pause();
 			break;
 		case R.id.btn_Stop:
-
+			mMusicControlCenter.stop();
 			break;
 		case R.id.btn_PlayPre:
-
+			mMusicControlCenter.prev();
 			break;
 		case R.id.btn_PlayNext:
-
+			mMusicControlCenter.next();
 			break;
 		case R.id.btn_Menu:
 
@@ -148,20 +152,20 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		if (mPlayAuto == false)
-		{
 
-		}
+		setcurTime(progress);
+		setSeekbarProgress(progress);
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		mPlayAuto = false;
+		isSeekbarTouch = true;
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		mPlayAuto = true;
+		isSeekbarTouch = false;
+		mMusicControlCenter.skipTo(mPlayProgress.getProgress());
 	}
 
 
@@ -198,7 +202,82 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 			break;
 		}
 	}
+	
 
+	public void setSeekbarMax(int max){
+		mPlayProgress.setMax(max);
+	}
+	
+	public void setTotalTime(int totalTime){
+		String timeString = TimeExUtils.formateTime(totalTime);
+		mtotaltimeTextView.setText(timeString);
+	}
+	
+	public void setSongName(String name){
+		mPlaySongTextView.setText(name);
+	}
+	
+	private void setcurTime(int curTime){
+		String timeString = TimeExUtils.formateTime(curTime);
+		mcurtimeTextView.setText(timeString);
+	}
+	
+	public void setSeekbarProgress(int time)
+	{
+		if (!isSeekbarTouch)
+		{
+			mPlayProgress.setProgress(time);	
+		}
+	}
+	
+	public void updateMediaInfo(MediaItem item){
 
+		setTotalTime(item.getDuration());
+		setSeekbarMax(item.getDuration());
+		setSeekbarProgress(0);
+
+		setSongName(item.getTitle());
+
+	}
+
+	public void setSongNumInfo(int curPlayIndex, int totalSongNum)
+	{
+		String str = String.valueOf(curPlayIndex + 1) + "/" + String.valueOf(totalSongNum);
+		mSongNumTextView.setText(str);
+	}
+	
+	
+	public void showPlay(boolean flag)
+	{
+		if (flag)
+		{
+			mBtnPlay.setVisibility(View.VISIBLE);
+			mBtnPause.setVisibility(View.GONE);
+			mBtnHandlePlay.setVisibility(View.VISIBLE);
+			mBtnHandlePause.setVisibility(View.INVISIBLE);
+    		
+		}else{
+			mBtnPlay.setVisibility(View.GONE);
+			mBtnPause.setVisibility(View.VISIBLE);
+			mBtnHandlePlay.setVisibility(View.INVISIBLE);
+			mBtnHandlePause.setVisibility(View.VISIBLE);
+		}
+		
+	}
+	
+	public void ShowHandlePanel(boolean flag)
+	{
+		if (flag)
+		{
+			mHandlePane.setVisibility(View.VISIBLE);
+		}else{
+			mHandlePane.setVisibility(View.INVISIBLE);
+		}
+		
+	}
+
+	public void showPlayErrorTip(){
+		Toast.makeText(MBApplication.getInstance(), R.string.toast_musicplay_fail, Toast.LENGTH_SHORT).show();
+	}
 
 }

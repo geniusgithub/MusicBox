@@ -56,6 +56,18 @@ public class MusicControlCenter implements IMediaOperator{
 		return mPlayerEngineImpl.getPlayState();
 	}
 	
+	public int getCurPosition(){
+		return mPlayerEngineImpl.getCurPosition();
+	}
+	
+	public int getDuration(){
+		return mPlayerEngineImpl.getDuration();
+	}
+	
+	public String getPlaySong(){
+		return mPlayerEngineImpl.getPlaySong();
+	}
+	
 	public boolean playIndex(int index){
 		if (!isHaveFile())
 		{
