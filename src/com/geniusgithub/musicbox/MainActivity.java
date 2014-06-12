@@ -14,6 +14,7 @@ import com.geniusgithub.musicbox.ui.SongListUIManager;
 import com.geniusgithub.musicbox.util.CommonLog;
 import com.geniusgithub.musicbox.util.LogFactory;
 
+import android.R.menu;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -22,6 +23,8 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 public class MainActivity extends Activity implements MediaStoreCenter.IScanObser,
@@ -47,8 +50,12 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		long time1 = System.currentTimeMillis();
 		setupViews();
 		initData();
+		long time2 = System.currentTimeMillis();
+		
+		log.e("onCreate costTime:" + (time2 - time1));
 	}
 	
 	@Override
@@ -80,6 +87,30 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 	}
 
 
+	
+	private final static int MENU_EXIT = 0x0001;
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		menu.add(0, MENU_EXIT, 0, "exit");
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+
+		int itemID = item.getItemId();
+		switch(itemID){
+			case MENU_EXIT:
+				finish();
+				MBApplication.getInstance().exitProcess();
+				break;
+		}
+		
+		return super.onMenuItemSelected(featureId, item);
+	}
 
 	private void setupViews(){
 		mSliderDrawerUIManager = new SliderDrawerUIManager();

@@ -67,12 +67,30 @@ public class MediaScannerCenter {
 	
 	private  void scanMusic(IMediaScanListener listener, ICancelScanMedia cancelObser) throws Exception {
 		
-		Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, 
+
+		Cursor cursor1 = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, 
 				IConstansMusicColume.AUDIO_COLUMN_STRS, 
 				null, 
 				null,
 				IConstansMusicColume.AUDIO_DISPLAYHNAME);				
 
+		log.e("MediaStore.Audio.Media.EXTERNAL_CONTENT_URI = " + MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString());
+		scanByCurson(cursor1, listener, cancelObser);
+		
+		Cursor cursor2 = mContext.getContentResolver().query(MediaStore.Audio.Media.INTERNAL_CONTENT_URI, 
+				IConstansMusicColume.AUDIO_COLUMN_STRS, 
+				null, 
+				null,
+				IConstansMusicColume.AUDIO_DISPLAYHNAME);				
+
+		log.e("MediaStore.Audio.Media.INTERNAL_CONTENT_URI = " + MediaStore.Audio.Media.INTERNAL_CONTENT_URI.toString());
+		scanByCurson(cursor2, listener, cancelObser);
+
+		listener.scanComplete();
+	}
+	
+	
+	private void scanByCurson(Cursor cursor, IMediaScanListener listener, ICancelScanMedia cancelObser){
 		if (cursor != null)
 		{
 			int count = cursor.getCount();
@@ -88,17 +106,14 @@ public class MediaScannerCenter {
 	         			MediaItem item = MediaItemFactory.buildItem(cursor);
 	         			if (item != null){
 	         				listener.mediaScan(item);
-	         			}
+	         			}	         		
 	         	
 	         		} while (cursor.moveToNext());  
 	         	}  			
 			}		
 			cursor.close();
 		}
-
-		listener.scanComplete();
 	}
-	
 	
 	public class ScanMediaThread extends Thread implements ICancelScanMedia{
 		

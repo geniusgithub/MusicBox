@@ -5,6 +5,7 @@ package com.geniusgithub.musicbox;
 import android.app.Application;
 
 import com.geniusgithub.musicbox.brower.MediaItem;
+import com.geniusgithub.musicbox.brower.MediaStoreCenter;
 import com.geniusgithub.musicbox.control.MusicControlCenter;
 import com.geniusgithub.musicbox.player.MusicPlayEngineImpl;
 import com.geniusgithub.musicbox.player.PlayerEngineListener;
@@ -41,6 +42,10 @@ public class MBApplication  extends Application implements PlayerEngineListener{
 		mMusicControlCenter.bindMusicPlayEngine(mMusicPlayEngineImpl);
 	}
 	
+	public void exitProcess(){
+		mMusicControlCenter.stop();
+		MediaStoreCenter.getInstance().clearAllData();
+	}
 	
 	public void setPlayerListener(PlayerEngineListener listener){
 		mPlayerEngineListener = listener;

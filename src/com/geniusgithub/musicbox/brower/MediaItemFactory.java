@@ -24,16 +24,30 @@ public class MediaItemFactory {
  			int duration = cursor.getInt(_time_index);
  			String artist = cursor.getString(_artist_index);
  			 			
- 			MediaItem item = new MediaItem();
- 			item.setPath(srcpath);
- 			item.setTitle(name);	
- 			item.setDuration(duration);
- 			item.setArtist(artist);
- 			
- 			return item;
+ 			if (isMediaValid(duration)){
+ 				MediaItem item = new MediaItem();
+ 	 			item.setPath(srcpath);
+ 	 			item.setTitle(name);	
+ 	 			item.setDuration(duration);
+ 	 			item.setArtist(artist);
+ 	 			
+ 	 			return item;
+ 			}else{
+ 				return null;
+ 			}
+ 		
 		}
 
 		return null;
+	}
+	
+	public static boolean isMediaValid(int duration){
+
+		if (duration > 0 && duration < 60 * 1000){
+			return false;
+		}
+		
+		return true;
 	}
 
 }
