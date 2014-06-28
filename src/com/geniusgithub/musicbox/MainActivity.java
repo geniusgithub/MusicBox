@@ -86,8 +86,25 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 		super.onDestroy();
 	}
 
+	
+	
 
 	
+	@Override
+	public void onBackPressed() {
+
+		if (mSliderDrawerUIManager.isSliderOpen()){
+			mSliderDrawerUIManager.closeSlider();
+			return ;
+		}
+		
+		super.onBackPressed();
+	}
+
+
+
+
+
 	private final static int MENU_EXIT = 0x0001;
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -134,18 +151,6 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 		mMusicPlayEngineListener = new MusicPlayEngineListener();
 		MBApplication.getInstance().setPlayerListener(mMusicPlayEngineListener);
 		
-		if (mMediaStoreCenter.isMusicEmpty()){
-			mMediaStoreCenter.doScanMedia();
-		}else{
-			int curPlayIndex = mMusicControlCenter.getCurPlayIndex();
-			int playstate = mMusicControlCenter.getCurPlayState();
-			mSongListUIManager.refreshList(mMediaStoreCenter.getMusicMedia());
-			mSongListUIManager.setPlayState( curPlayIndex, playstate);
-			mSliderDrawerUIManager.showPlay(playstate != PlayState.MPS_PAUSE);		
-			mSliderDrawerUIManager.setSongNumInfo(curPlayIndex, mMediaStoreCenter.getMusicMedia().size());
-			mSliderDrawerUIManager.setSongName(mMusicControlCenter.getPlaySong());
-		}
-		
 		mHandler = new Handler()
 		{
 			@Override
@@ -162,6 +167,29 @@ public class MainActivity extends Activity implements MediaStoreCenter.IScanObse
 		
 		mPlayPosTimer = new SingleSecondTimer(this);
 		mPlayPosTimer.setHandler(mHandler, REFRESH_CURPOS);
+		
+		
+		if (mMediaStoreCenter.isMusicEmpty()){
+			mMediaStoreCenter.doScanMedia();
+		}else{
+			int curPlayIndex = mMusicControlCenter.getCurPlayIndex();
+			int playstate = mMusicControlCenter.getCurPlayState();
+			mSongListUIManager.refreshList(mMediaStoreCenter.getMusicMedia());
+			mSongListUIManager.setPlayState( curPlayIndex, playstate);
+			mSliderDrawerUIManager.setSongNumInfo(curPlayIndex, mMediaStoreCenter.getMusicMedia().size());
+			mSliderDrawerUIManager.setSongName(mMusicControlCenter.getPlaySong());
+			mSliderDrawerUIManager.updateMediaInfo(mMusicControlCenter.getCurMedia());
+			mSliderDrawerUIManager.setSeekbarProgress(mMusicControlCenter.getCurPosition());
+			if (playstate == PlayState.MPS_PLAYING){
+				mSliderDrawerUIManager.showPlay(false);
+				mPlayPosTimer.startTimer();
+			}else{
+				mSliderDrawerUIManager.showPlay(true);
+			}	
+	
+		}
+		
+
 	}
 	
 	private void unInitData(){

@@ -60,6 +60,9 @@ public abstract class AbstractMediaPlayEngine implements IBasePlayEngine, OnComp
 		return "";
 	}
 		
+	public MediaItem getCurMedia(){
+		return mMediaInfo;
+	}
 	@Override
 	public void play() {
 
