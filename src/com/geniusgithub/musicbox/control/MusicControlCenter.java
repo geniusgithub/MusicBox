@@ -48,6 +48,10 @@ public class MusicControlCenter implements IMediaOperator{
 		mPlayerEngineImpl = object;
 	}
 	
+	public MediaItem getCurMedia(){
+		return mPlayerEngineImpl.getCurMedia();
+	}
+	
 	public int getCurPlayIndex(){
 		return mCurPlayIndex;
 	}

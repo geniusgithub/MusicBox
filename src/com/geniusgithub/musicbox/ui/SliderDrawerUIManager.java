@@ -59,6 +59,7 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 	public SliderDrawerUIManager()
 	{
 		mMusicControlCenter = MusicControlCenter.getInstance();
+
 	}
 	
 	@Override
@@ -113,6 +114,14 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 	
 	public void removeSliderStatusListener(){
 		mChangeListener = null;
+	}
+	
+	public boolean isSliderOpen(){
+		return mSlidingDrawer.isOpened();
+	}
+	
+	public void closeSlider(){
+		mSlidingDrawer.close();
 	}
 	
 	@Override
@@ -195,8 +204,10 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 		switch(view.getId())
 		{
 		case R.id.handler_play:
+			mMusicControlCenter.replay();
 			break;
 		case R.id.handler_pause:
+			mMusicControlCenter.pause();
 			break;
 		default:
 			break;
@@ -231,13 +242,14 @@ public class SliderDrawerUIManager implements IBaseUIManager, OnClickListener, O
 	}
 	
 	public void updateMediaInfo(MediaItem item){
+ 
+		if (item != null){
+			setTotalTime(item.getDuration());
+			setSeekbarMax(item.getDuration());
+			setSeekbarProgress(0);
 
-		setTotalTime(item.getDuration());
-		setSeekbarMax(item.getDuration());
-		setSeekbarProgress(0);
-
-		setSongName(item.getTitle());
-
+			setSongName(item.getTitle());
+		}
 	}
 
 	public void setSongNumInfo(int curPlayIndex, int totalSongNum)
